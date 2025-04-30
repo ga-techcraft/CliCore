@@ -1,4 +1,27 @@
 <?php
+spl_autoload_extensions(".php");
+spl_autoload_register(function($class) {
+    $file = __DIR__ . '/'  . str_replace('\\', '/', $class). '.php';
+    if (file_exists(stream_resolve_include_path($file))) include($file);
+});
+
+$commands = include "Commands/registry.php";
+
+$inputCommand = $argv[1];
+
+foreach ($commands as $commandClass) {
+    if ($inputCommand === $commandClass::getAlius()) {
+        try {
+            $command = new $commandClass();
+            $command->execute();
+            exit(0);
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+}
+
+fwrite(STDERR, "Failed to run any commands");
 
 // コマンドライン引数からコマンド名を取得
 
