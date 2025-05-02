@@ -5,7 +5,7 @@ namespace Commands;
 use Exception;
 
  abstract class AbstractCommand implements Command{
-  protected static string $alius;
+  protected static ?string $alius = null;
   protected static bool $requireCommandValue = false;
 
   public function __construct() {
@@ -13,13 +13,20 @@ use Exception;
   }
 
   private function setUpArgsMap(): void{
-    $commandValue = isset($GLOBALS['argv'][2]) ? $GLOBALS['argv'][2] : false;
+    $args = $GLOBALS['argv'];
+    $startIndex = array_search($this->getAlius(), $args);
 
-    if ($commandValue === false) {
-      if (static::$requireCommandValue === true){
+    if ($startIndex === false) throw new Exception(sprintf(sprintf("%sは存在しません"), $this->getAlius()));
+    else $startIndex++;
+
+    if (!isset($args[$startIndex]) || $args[$startIndex][0] === '-') {
+      if (static::$requireCommandValue === true) {
         throw new Exception(sprintf("%sにはcommand value が必要です。", static::$alius));
       }
+    } else {
+      
     }
+
   }
 
   public static function getAlius(): string{

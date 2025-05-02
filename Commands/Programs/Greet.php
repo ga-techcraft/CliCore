@@ -4,7 +4,7 @@ namespace Commands\Programs;
 use Commands\AbstractCommand;
 
 class Greet extends AbstractCommand{
-  protected static string $alius = "greet";
+  protected static ?string $alius = "greet";
 
   public function execute(): int{
     echo "this is greet command";
