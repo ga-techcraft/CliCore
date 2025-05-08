@@ -4,45 +4,77 @@ namespace Commands;
 
 use Exception;
 
- abstract class AbstractCommand implements Command{
-  protected static ?string $alius = null;
-  protected static bool $requireCommandValue = false;
+abstract class AbstractCommand implements Command{
+    protected static string $alias = '';
+    private array $argsMap = [];
+    public static bool $isRequiredCommandValue = false;
 
-  public function __construct() {
-    $this->setUpArgsMap();
-  }
+    public function __construct(){
+        $args = $GLOBALS['argv'];
+        $currentIndex = array_search(static::getAlias(), $args) + 1;
 
-  private function setUpArgsMap(): void{
-    $args = $GLOBALS['argv'];
-    $startIndex = array_search($this->getAlius(), $args);
+        // - または 何もない、かつコマンドバリューが必要な場合は、例外を投げる。
+        if (!isset($args[$currentIndex]) || $args[$currentIndex] === '-') {
+            if (static::isCommandValueRequired()) {
+                throw new Exception("Command value is required.");
+            }
+        }
+        else{
+            $this->argsMap[static::getAlias()] = $args[$currentIndex];
+            $currentIndex++;
+        }
 
-    if ($startIndex === false) throw new Exception(sprintf(sprintf("%sは存在しません"), $this->getAlius()));
-    else $startIndex++;
+        $shellArgs = [];
 
-    if (!isset($args[$startIndex]) || $args[$startIndex][0] === '-') {
-      if (static::$requireCommandValue === true) {
-        throw new Exception(sprintf("%sにはcommand value が必要です。", static::$alius));
-      }
-    } else {
-      
+        for ($i = $currentIndex; $i < count($args); $i++) {
+            $arg = $args[$i];
+            if (strlen($arg) >= 2 && $arg[0] . $arg[1] == '--') {
+                $key = substr($arg, 2);
+            } else if ($arg[0] == '-') {
+                $key = substr($arg, 1);
+            } else {
+                throw new Exception("Options must start with - or --");
+            }
+
+            $shellArgs[$key] = true;
+
+            if (isset($args[$i + 1]) && $args[$i + 1] !== '-') {
+                $shellArgs[$key] = $args[$i + 1];
+                $i++;
+            }
+        }
+
+        foreach (static::getArguments() as $argument) {
+            $argString = $argument->getArgument();
+            $value = null;
+            
+            if($argument->isShortAllowed() && isset($shellArgs[$argString[0]])) $value = $shellArgs[$argString[0]];
+            else if(isset($shellArgs[$argString])) $value = $shellArgs[$argString];
+
+            if($value === null){
+                if($argument->isRequired()) throw new Exception(sprintf('Could not find the required argument %s', $argString));
+                else $this->argsMap[$argString] = false;
+            }
+            else $this->argsMap[$argString] = $value;
+        }
+
+        print_r($this->argsMap);
     }
 
-  }
+    public static function getAlias(): string{
+        return static::$alias;
+    }
 
-  public static function getAlius(): string{
-    return static::$alius;
-  }
+    public static function help(): string{
+        return sprintf("this is %s command's help", static::getAlias());
+    }
 
-  public static function isCommandValueRequired(): bool{
-    return static::$requireCommandValue;
-  }
+    public static function isCommandValueRequired(): bool{
+        return static::$isRequiredCommandValue;
+    }
 
-  public abstract function execute(): int;
+    public function getArgumentValue(string $arg): bool | string{
+        return $this->argsMap[$arg];
+    }
+
 }
-// コマンド名を取得
-
-// 引数パース
-
-// ログ出力
-
-// getHelp()生成
