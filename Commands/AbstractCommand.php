@@ -8,13 +8,14 @@ abstract class AbstractCommand implements Command{
     protected static string $alias = '';
     private array $argsMap = [];
     public static bool $isRequiredCommandValue = false;
+    
 
     public function __construct(){
         $args = $GLOBALS['argv'];
         $currentIndex = array_search(static::getAlias(), $args) + 1;
 
         // - または 何もない、かつコマンドバリューが必要な場合は、例外を投げる。
-        if (!isset($args[$currentIndex]) || $args[$currentIndex] === '-') {
+        if (!isset($args[$currentIndex]) || $args[$currentIndex][0] === '-') {
             if (static::isCommandValueRequired()) {
                 throw new Exception("Command value is required.");
             }

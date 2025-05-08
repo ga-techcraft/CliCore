@@ -5,8 +5,8 @@ namespace Commands;
 class Argument{
  private string $argument;
  private string $description;
- private bool $required;
- private bool $allowAsShort;
+ private bool $required = true;
+ private bool $allowAsShort = false;
 
  public function __construct(string $argument){
     $this->argument = $argument;
