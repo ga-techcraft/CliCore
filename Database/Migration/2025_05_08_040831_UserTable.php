@@ -5,6 +5,7 @@ namespace Database\Migration;
 use Database\SchemaMigration;
 
 class UserTable implements SchemaMigration{
+    protected ?string $tableName = 'users';
     public function up(): array{
         return [
             "CREATE TABLE users ("

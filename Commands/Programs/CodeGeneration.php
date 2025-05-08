@@ -4,6 +4,7 @@ namespace Commands\Programs;
 
 use Commands\AbstractCommand;
 use Commands\Argument;
+use Exception;
 
 class CodeGeneration extends AbstractCommand{
   public static bool $isRequiredCommandValue = true;
@@ -24,6 +25,9 @@ class CodeGeneration extends AbstractCommand{
     }
     else if($codeNameToGenerate === 'command'){
         $this->makeCommand($name);
+    }
+    else if($codeNameToGenerate === 'seeder'){
+        $this->makeSeeder($name);
     } else {
       throw new Exception("Invalid code name to generate");
     }
@@ -85,6 +89,37 @@ class CodeGeneration extends AbstractCommand{
 
     // パス作成
     $path = __DIR__ . "/$name.php";
+
+    // ファイル保存
+    file_put_contents($path, $content);
+  }
+
+  private function makeSeeder(string $name){
+    // コンテンツ作成
+    $content = <<< SEEDER
+    <?php
+
+    namespace Database\Seeds;
+
+    use Database\AbstractSeeder;
+
+    class $name extends AbstractSeeder{
+        protected ?string \$tableName = null;
+        protected array \$tableData = [];
+
+        public function createRowData(): array{
+            return [
+                [
+                    'data_type' => 'string',
+                    'column_name' => 'name',
+                ],
+            ];
+        }
+    }
+    SEEDER;
+
+    // パス作成
+    $path = __DIR__ . '/../../Database/Seeds/'. $name . '.php';
 
     // ファイル保存
     file_put_contents($path, $content);
