@@ -26,22 +26,21 @@ abstract class AbstractCommand implements Command{
         }
 
         $shellArgs = [];
-
+        
         for ($i = $currentIndex; $i < count($args); $i++) {
             $arg = $args[$i];
             if (strlen($arg) >= 2 && $arg[0] . $arg[1] == '--') {
                 $key = substr($arg, 2);
-            } else if ($arg[0] == '-') {
-                $key = substr($arg, 1);
-            } else {
-                throw new Exception("Options must start with - or --");
-            }
-
-            $shellArgs[$key] = true;
-
-            if (isset($args[$i + 1]) && $args[$i + 1] !== '-') {
+                if (!isset($args[$i + 1]) || $args[$i + 1][0] === '-') {
+                    throw new Exception("Option value is required.");
+                }
                 $shellArgs[$key] = $args[$i + 1];
                 $i++;
+            } else if ($arg[0] == '-') {
+                $key = substr($arg, 1);
+                $shellArgs[$key] = true;
+            } else {
+                throw new Exception("Options must start with - or --");
             }
         }
 
