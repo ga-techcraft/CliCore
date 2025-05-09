@@ -57,7 +57,7 @@ abstract class AbstractCommand implements Command{
             }
 
             if($argument->isArgumentValueRequired() && $value === true) throw new Exception(sprintf('Could not find the required argument value %s', $argString));
-            else $this->argsMap[$argString] = $value;
+            else $this->argsMap[$argString] = false;
         }
 
         print_r($this->argsMap);
