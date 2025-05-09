@@ -9,11 +9,12 @@ use Exception;
 
 class Migrate extends AbstractCommand{
     protected static string $alias = 'migrate';
+    public static bool $isRequiredCommandValue = false;
 
     public static function getArguments(): array{
         return [
-            new Argument('init')->required(false),
-            new Argument('rollback')->required(false),
+            new Argument('init')->required(false)->argumentValueRequired(false),
+            new Argument('rollback')->required(false)->argumentValueRequired(false),
         ];
     }
 

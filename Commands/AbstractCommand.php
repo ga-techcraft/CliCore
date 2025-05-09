@@ -7,7 +7,7 @@ use Exception;
 abstract class AbstractCommand implements Command{
     protected static string $alias = '';
     private array $argsMap = [];
-    public static bool $isRequiredCommandValue = false;
+    public static bool $isRequiredCommandValue = true;
     
 
     public function __construct(){
@@ -44,6 +44,8 @@ abstract class AbstractCommand implements Command{
             }
         }
 
+        // print_r($shellArgs);
+
         foreach (static::getArguments() as $argument) {
             $argString = $argument->getArgument();
             $value = null;
@@ -54,10 +56,12 @@ abstract class AbstractCommand implements Command{
             if($value === null){
                 if($argument->isRequired()) throw new Exception(sprintf('Could not find the required argument %s', $argString));
                 else $this->argsMap[$argString] = false;
+            } else {
+                $this->argsMap[$argString] = $value;
             }
 
             if($argument->isArgumentValueRequired() && $value === true) throw new Exception(sprintf('Could not find the required argument value %s', $argString));
-            else $this->argsMap[$argString] = false;
+            
         }
 
         print_r($this->argsMap);

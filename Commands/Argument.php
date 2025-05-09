@@ -7,7 +7,7 @@ class Argument{
  private string $description;
  private bool $required = true;
  private bool $allowAsShort = false;
- private bool $isArgumentValueRequired = false;
+ private bool $isArgumentValueRequired = true;
 
  public function __construct(string $argument){
     $this->argument = $argument;
