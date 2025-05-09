@@ -7,6 +7,7 @@ class Argument{
  private string $description;
  private bool $required = true;
  private bool $allowAsShort = false;
+ private bool $isArgumentValueRequired = false;
 
  public function __construct(string $argument){
     $this->argument = $argument;
@@ -43,4 +44,12 @@ public function allowAsShort(bool $allowAsShort): Argument{
     return $this;
 }
 
+public function isArgumentValueRequired(): bool{
+    return $this->isArgumentValueRequired;
+}
+
+public function argumentValueRequired(bool $isArgumentValueRequired): Argument{
+    $this->isArgumentValueRequired = $isArgumentValueRequired;
+    return $this;
+}
 }

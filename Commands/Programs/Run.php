@@ -11,7 +11,7 @@ class Run extends AbstractCommand{
 
   public static function getArguments(): array{
     return [
-      new Argument('a')->description('a')->required(false)->allowAsShort(true),
+      new Argument('a')->description('a')->required(true)->allowAsShort(true)->argumentValueRequired(true),
     ];
   }
 
